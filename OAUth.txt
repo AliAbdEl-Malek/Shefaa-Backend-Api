@@ -1,0 +1,54 @@
+This file shows the main steps to setup Passport OAuth (open authentication)and how to use it to authenticate a user using athird party 
+such as facebook, Google, Twitter,...etc.
+
+this is the link for the passport website:
+http://www.passportjs.org/
+
+===============================================================================
+
+first of all:
+1- we need to install the (passport) module using:
+========= npm install passport ========
+
+
+2- we need to install (passport-google-oauth20) strategy using:
+========= npm install passport-google-oauth20 ========
+
+here is the link for all details about passport-google-oauth20 strategy
+http://www.passportjs.org/packages/passport-google-oauth20/
+
+3-  create a folder named (config) to store all configurations about authentication
+
+4- inside that folder, create a file named (passport-setup.js) then setup the passport environment
+
+5- go to  https://console.developers.google.com/  then create a project in google console api 
+then you search for  Google+ api to activate the service
+
+6- after enabling the Google+ api you need to activate the credentials
+
+7- Once you have the credentials, we can use the (clientID) and (clientSecret) 
+and import them to our express app
+
+8- inside the (config) folder, create a new file named (keys.js) in which you should store all your keys and add this file to .gitignore
+
+9- note that the callback function of passport.use is fired before the one in router
+
+10-once we have the user's profile information, now we can crate of find it in our database
+
+11- now, we want tp tell the browser that this user is already logggedin 
+we do that by creating a cookie annd storing it in our website
+
+12- start by defining the (serailize)  and (deserialize) functions of passport
+
+13- after that we need a module called (cookie session)
+
+========== npm install cookie-session ===========
+
+14- then we define the cookie session in our app.js with (maxAge & Keys) properties
+
+15- initialize passport in app.js and passport session before the app.router
+
+16- 
+
+
+
