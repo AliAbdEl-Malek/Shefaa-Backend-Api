@@ -4,10 +4,22 @@ const mongoose = require('mongoose')
 var user = new mongoose.Schema({
 
     cartProducts:
-   [{
-       type:mongoose.Schema.Types.ObjectId,
-       ref:"product"
-    }],
+        [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "product"
+        }],
+
+    orders: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "order"
+        }
+    ],
+    favouriteProducts:
+    [{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"product"
+     }],
 
     'id': String,
     'name': String,
@@ -18,12 +30,11 @@ var user = new mongoose.Schema({
     'password': String,
     "refreshToken": String,
     "photoURL": String,
-    "accessToken":String,
-    "address":String,
-    "phone":String
-
+    "accessToken": String,
+    "address": String,
+    "phone": String,
 
 
 });
 
-module.exports = mongoose.model("siteuser", user);
+module.exports = mongoose.model("user", user);

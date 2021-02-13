@@ -6,7 +6,7 @@ module.exports = {
         clientSecret: "rEhRRoKi2BWtMD0mEXtw9R5A"
     },
     mongodb: {
-        dbURL: "mongodb://127.0.0.1:27017/shefaa"
+        dbURL: `mongodb+srv://ali:9080@cluster0.1lnyw.mongodb.net/shefaa`
     },
     session: {
         cookieKey: "My-cookiekey-to-encrrept-cookie-id"

@@ -42,6 +42,10 @@ const prescriptionRouter = require('./routes/prescription')
 
 const partnerRouter = require('./routes/partner')
 
+const orderRouter = require('./routes/order')
+
+const favouriteRouter = require('./routes/favourite')
+
 // ----------------------------------------------------
 
 //======== user ==========
@@ -85,16 +89,15 @@ app.use(passport.initialize())
 // now we want passport to use cookies
 app.use(passport.session())
 
-
 // use auth middleware
 app.use('/auth', authRouter)
-
 
 // home router
 app.use('/home', homeRouter)
 
 // product router
 app.use('/product', productRouter)
+
 // Previos orders router
 app.use('/porder', previousorderRouter);
 
@@ -107,7 +110,21 @@ app.use('/message', websiteMessagesRouter);
 // prescription router
 app.use('/prescription', prescriptionRouter);
 
+// checkout router
+app.use('/order', orderRouter);
+
+// favourite router
+app.use('/favourite', favouriteRouter);
+
+
+
+
+
+
+
+
 //======== partner ==========
+
 // partner router
 app.use('/partner', partnerRouter)
 
