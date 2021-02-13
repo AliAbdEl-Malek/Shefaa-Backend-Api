@@ -6,7 +6,6 @@ const router = express.Router()
 const Product = require('../models/product')
 
 const jwt = require('jsonwebtoken');
-const product = require('../models/product');
 
 //create a new product
 router.post('/add', (req, res) => {

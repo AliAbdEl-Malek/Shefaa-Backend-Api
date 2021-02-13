@@ -1,52 +1,79 @@
 const express = require('express');
 
+const { verifyToken } = require('../config/accessAuth');
+
 const router = express.Router()
 
 const siteuser = require('../models/user')
 
+const jwt = require('jsonwebtoken');
+
+//=========================================
+
 //Add to cart
-router.put('/add/:id',(req , res)=>{
-console.log(req.body);
+router.put('/add/:id', verifyToken, (req, res) => {
+  
 
-siteuser.findByIdAndUpdate(req.params.id,{
-
-    $push:{cartProducts : req.body}
-
-    },(err, cartProduct) => {
+    jwt.verify(req.headers.authorization, "secretKey", (err, authData) => {
         if (err) {
-            res.status(500).send({ "Data": err, "message": "Failed in posting new cartProduct...!", "status": false })
+            res.send({ "Data": err, "message": "Session expired!", "status": false });
         } else {
-            res.status(200).send({ "Data": cartProduct, "message": "New cartProduct Posted Successfully", "status": true })
+            siteuser.findOneAndUpdate({ accessToken: req.headers.authorization }, { $push: { cartProducts: req.params.id } }, (err, data) => {
+                if (err) {
+
+                    res.send({ "Data": err, "message": "Failed to add product to user's cart", "status": false });
+                } else {
+                    res.status(200).send({ "Data": data, "message": "Product added successfully", "status": true })
+                }
+            })
         }
     });
+
 });
 
-//get cart
-router.get('/',async(req , res) => {
-    const foundUser = await siteuser.find().populate("cartProducts");
-    console.log("osamaaaaaaaaaaaaa"+foundUser);
 
-    res.status(200).send({ "Data": foundUser, "message": "All products retrieved Successfully..!", "status": true })
-    // siteuser.find({}, (err, data) => {
-    //     if (err) {
-    //         res.status(500).send({ "Data": err, "message": "Failed in getting product's data ...!", "status": false })
-    //     } else {
-    //         res.status(200).send({ "Data": data, "message": "All products retrieved Successfully..!", "status": true })
-    //     }
-    // })
+
+//get cart products for specific user
+router.get('/', verifyToken, (req, res) => {
+
+    // console.log("req.headers.authorization:",req.headers.authorization)
+    jwt.verify(req.headers.authorization, "secretKey", async (err, authData) => {
+        if (err) {
+
+            res.send({ "Data": err, "message": "Session expired!", "status": false });
+
+        } else {
+            const products = await siteuser.findOne({ accessToken: req.headers.authorization }).populate("cartProducts")
+            // console.log("products:", products)
+            res.status(200).send({ "Data": products.cartProducts, "message": "Products retreived successfully", "status": true })
+        }
+    });
+
 })
+
+
 
 //rempve from cart
-router.put('/delete/:productId',(req , res) => {
-    console.log("walaaaaaaaaaa",req.body);
-    siteuser.findByIdAndUpdate( req.body.userId , {
-        $pull:{cartProducts:req.params.productId}
-    })
-    .then(data => res.json(data))
-    // .catch(next)
+router.put('/delete/:id', verifyToken, (req, res) => {
+ 
+    jwt.verify(req.headers.authorization, "secretKey", (err, authData) => {
+        if (err) {
+            res.send({ "Data": err, "message": "Session expired!", "status": false });
+        } else {
+            siteuser.findOneAndUpdate({ accessToken: req.headers.authorization }, { $pull: { cartProducts: req.params.id } }, (err, data) => {
+                if (err) {
 
-
+                    res.send({ "Data": err, "message": "Failed to delete product from user's cart", "status": false });
+                } else {
+                    res.status(200).send({ "Data": data, "message": "Product deleted successfully", "status": true })
+                }
+            })
+        }
+    });
 })
+
+
+
 
 module.exports = router
 
