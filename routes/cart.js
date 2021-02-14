@@ -8,6 +8,8 @@ const siteuser = require('../models/user')
 
 const jwt = require('jsonwebtoken');
 
+const User = require('../models/user')
+
 //=========================================
 
 //Add to cart
@@ -71,6 +73,32 @@ router.put('/delete/:id', verifyToken, (req, res) => {
         }
     });
 })
+
+
+// Router for deleting all products in cart
+router.put('/delete',verifyToken,(req,res)=>{
+
+    // console.log("req.headers.authorization:",req.headers.authorization)
+    jwt.verify(req.headers.authorization, "secretKey", (err, authData) => {
+
+        if (err) {
+            res.send({ "Data": err, "message": "Session expired!", "status": false });
+        } else {
+            User.findOneAndUpdate({ accessToken: req.headers.authorization},{cartProducts:[]}, (err, data) => {
+                if (err) {
+                    res.status(500).send({ "Data": err, "message": "Failed to delete cart products", "status": false })
+                } else {
+
+                    res.status(200).send({ "Data": data, "message": "All cart products deleted successfully", "status": true })
+                }
+            })
+        }
+    });
+
+})
+
+
+
 
 
 

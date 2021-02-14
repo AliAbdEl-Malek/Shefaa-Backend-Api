@@ -54,7 +54,7 @@ router.post('/signup', (req, res) => {
 
                             //create an access token for new user
                             const accesstoken = jwt.sign({ email: req.body.email },
-                                'secretKey', { expiresIn: '10h' });
+                                'secretKey');
                             console.log("Token : ", accesstoken);
 
                             //update the user's id and access token

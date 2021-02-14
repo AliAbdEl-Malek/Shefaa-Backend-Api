@@ -9,7 +9,6 @@ var order = new mongoose.Schema({
         'email':String
     },
     customer: {
-        'id': String,
         'name': String,
         'address': String,
         "promoCode": String,
@@ -19,6 +18,6 @@ var order = new mongoose.Schema({
 
 
 
-});
+},{timestamps:true});
 
 module.exports = mongoose.model("order", order);
