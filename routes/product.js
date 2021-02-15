@@ -155,6 +155,24 @@ router.put('/update/:id', (req, res) => {
     })
 })
 
+//delete product
+router.put('/delete/:id', verifyToken, (req, res) => {
+ 
+    jwt.verify(req.headers.authorization, "secretKey", (err, authData) => {
+        if (err) {
+            res.send({ "Data": err, "message": "Session expired!", "status": false });
+        } else {
+            Product.findOneAndUpdate({ accessToken: req.headers.authorization }, { $pull: { ID: req.params.id } }, (err, data) => {
+                if (err) {
+
+                    res.send({ "Data": err, "message": "Failed to delete product", "status": false });
+                } else {
+                    res.status(200).send({ "Data": data, "message": "Product deleted successfully", "status": true })
+                }
+            })
+        }
+    });
+})
 
 
 
