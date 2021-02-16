@@ -6,6 +6,17 @@ const router = express.Router();
 const websiteMessages = require('../models/website-messages')
 
 
+// get all messages
+router.get('/message', (req, res) => {
+    Product.find({}, (err, data) => {
+        if (err) {
+            res.status(500).send({ "Data": err, "message": "Failed in getting messages ...!", "status": false })
+        } else {
+            res.status(200).send({ "Data": data, "message": "All messages retrieved Successfully..!", "status": true })
+        }
+    })
+})
+
 
 // router for posting websiteMessages 
 router.post('/', (req, res) => {

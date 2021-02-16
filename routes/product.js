@@ -17,7 +17,10 @@ router.post('/add', (req, res) => {
         price: req.body.price,
         quantity: req.body.quantity,
         photoURL: req.body.photoURL,
-        category: req.body.category
+        category: req.body.category,
+        title: req.body.title,
+        body: req.body.body,
+        sideEffects: req.body.sideEffects
 
     }, (err, product) => {
         if (err) {
@@ -76,6 +79,20 @@ router.get('/:id', verifyToken, (req, res) => {
             })
         }
     });
+   
+})
+
+// get a specific product by id
+router.get('/edit/:id', (req, res) => {
+            
+    Product.findById(req.params.id, (err, product) => {
+        if (err) {
+            res.status(500).send({ "Data": err, "message": "Failed in getting product's data ...!", "status": false })
+        } else {
+            
+            res.status(200).send({ "Data": product, "message": " product retrieved Successfully..!", "status": true })
+        }
+    })
    
 })
 
@@ -142,7 +159,10 @@ router.put('/update/:id', (req, res) => {
         price: req.body.price,
         quantity: req.body.quantity,
         photoURL: req.body.photoURL,
-        category: req.body.category
+        category: req.body.category,
+        title: req.body.title,
+        body: req.body.body,
+        sideEffects: req.body.sideEffects
 
 
     }, (err, product) => {
@@ -156,22 +176,17 @@ router.put('/update/:id', (req, res) => {
 })
 
 //delete product
-router.put('/delete/:id', verifyToken, (req, res) => {
- 
-    jwt.verify(req.headers.authorization, "secretKey", (err, authData) => {
+router.delete('/delete/:id', (req, res) => {
+    
+    Product.findByIdAndDelete({ "_id": req.params.id } , (err, data) => {
         if (err) {
-            res.send({ "Data": err, "message": "Session expired!", "status": false });
-        } else {
-            Product.findOneAndUpdate({ accessToken: req.headers.authorization }, { $pull: { ID: req.params.id } }, (err, data) => {
-                if (err) {
 
-                    res.send({ "Data": err, "message": "Failed to delete product", "status": false });
-                } else {
-                    res.status(200).send({ "Data": data, "message": "Product deleted successfully", "status": true })
-                }
-            })
+            res.send({ "Data": err, "message": "Failed to delete product", "status": false });
+        } else {
+            res.status(200).send({ "Data": data, "message": "Product deleted successfully", "status": true })
         }
-    });
+    })
+       
 })
 
 
