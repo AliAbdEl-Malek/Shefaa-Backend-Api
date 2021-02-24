@@ -1,8 +1,9 @@
 const mongoose = require('mongoose')
 
 
-var order = new mongoose.Schema({
+var deliveredOrder = new mongoose.Schema({
 
+    partnerEmail:String,
     products: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -19,11 +20,12 @@ var order = new mongoose.Schema({
         "promoCode": String,
         "phone": String
     },
-    totalPrice:String
+    totalPrice:String,
+    orderTime:String
 
 
 
 
 },{timestamps:true});
 
-module.exports = mongoose.model("order", order);
+module.exports = mongoose.model("deliveredOrder", deliveredOrder);

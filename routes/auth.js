@@ -42,8 +42,9 @@ router.get('/google/redirect', passport.authenticate('google'), (req, res) => {
     // res.status(200).send("You have reached the callback URI...!")
     // now we can handle our user after redirecting from google and storing the user's id in our cookie session
     // res.send({ "Data": req.user, "message": "Data loaded Successfully", "status": true })
-
+    console.log("req.user........",req.user)
     res.redirect('/home')
+    // send({ "Data": req.user, "message": "Data loaded Successfully", "status": true , "token": req.user.accesstoken })
 })
 
 //=================================================

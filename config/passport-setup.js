@@ -9,6 +9,7 @@ const keys = require('./keys')
 
 const GoogleUser = require('../models/user')
 
+const jwt = require('jsonwebtoken');
 
 
 // searializing the user's id to be stored in a cookie
@@ -46,10 +47,10 @@ passport.use(
         // passport callback function
         console.log("passport callback funcion is fired !")
         console.log("User's profile information", profile)
-            // console.log("accessToken: ", accessToken)
-            // console.log("refreshToken: ", refreshToken)
-            // console.log("User's Email: ", email)
-            // console.log(done)
+        // console.log("accessToken: ", accessToken)
+        // console.log("refreshToken: ", refreshToken)
+        // console.log("User's Email: ", email)
+        // console.log(done)
 
         //check if user already in our database
         GoogleUser.findOne({ id: profile._json.sub }).then((user) => {
@@ -61,13 +62,19 @@ passport.use(
                 done(null, user);
 
             } else {
+                //access token 
+                const accesstoken = jwt.sign({ email: profile._json.email },
+                    'secretKey');
+                console.log("Token : ", accesstoken);
+
                 // craete a new user in database
                 new GoogleUser({
                     id: profile._json.sub,
                     name: profile._json.given_name,
                     // lastName: profile._json.family_name,
                     email: profile._json.email,
-                    photoURL: profile._json.picture
+                    photoURL: profile._json.picture,
+                    accessToken:accesstoken
 
                 }).save().then((newUser) => {
                     console.log("Created a new user", newUser)

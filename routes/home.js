@@ -16,10 +16,11 @@ const authCheck = (req, res, next) => {
 }
 
 router.get('/', authCheck, (req, res) => {
-    console.log(req.headers)
-        //render the main profile
-        // res.status(200).send(`Now you are loggedin, this is your profile id:  ${req.user.id} <img src=" ${req.user.photoURL}" >`)
-    res.redirect("http://localhost:4200")
+
+    
+    // res.send({ "Data": req.user, "message": "Data loaded Successfully", "status": true , "token": req.user.accesstoken })
+    res.redirect('http://localhost:4200/')
+    
 
 })
 

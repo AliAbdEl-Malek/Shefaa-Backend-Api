@@ -11,10 +11,14 @@ const mailService = require('../config/mailService')
 const jwt = require('jsonwebtoken');
 
 const { verifyToken } = require('../config/accessAuth');
+
 const { generateCode } = require('../config/codeGenerator');
 
 const multer = require('multer');
 
+const keys = require('../config/keys');
+
+//===================================================
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, './uploads/')
@@ -131,7 +135,7 @@ router.post('/login', (req, res) => {
 })
 
 
-//Get Profile By ID
+//Get Profile By accessToken
 router.get('/get/:accessToken', verifyToken, (req, res) => {
     // console.log(req.headers)
     // console.log("request params:", req.params)
@@ -145,6 +149,32 @@ router.get('/get/:accessToken', verifyToken, (req, res) => {
         } else {
 
             User.findOne({ accessToken: req.params.accessToken }, (err, User) => {
+                if (err) {
+                    // console.log("Error from find:", err)
+                    res.status(500).send({ "Data": err, "message": "Error in getting data...!", "status": false })
+                } else {
+                    res.status(200).send({ "Data": User, "message": "Data loaded Successfully", "status": true })
+                }
+            })
+        }
+    });
+})
+
+
+//Get Profile By ID from partners
+router.get('/:id', verifyToken, (req, res) => {
+    console.log(req.headers)
+    console.log("request params:", req.params)
+    // console.log("Token is: ",req.params.accessToken)
+    jwt.verify(req.headers.authorization, keys.secretKey, (err, authData) => {
+
+        if (err) {
+
+            res.send({ "Data": err, "message": "Session expired!", "status": false });
+
+        } else {
+
+            User.findOne({ _id: req.params.id }, (err, User) => {
                 if (err) {
                     // console.log("Error from find:", err)
                     res.status(500).send({ "Data": err, "message": "Error in getting data...!", "status": false })
