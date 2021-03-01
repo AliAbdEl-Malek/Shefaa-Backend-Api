@@ -93,27 +93,31 @@ router.post('/login', (req, res) => {
                         console.log("Error", err)
                     else {
                         if (result) {
-                            console.log("password equals hash = ", result) // true 
+                            if (data.deactivate == true) {
+                                console.log("This User is Activated")
+                            }
+                            else {
+                                console.log("password equals hash = ", result) // true 
 
-                            //action (login)
-                            const accesstoken = jwt.sign({ email: data.email },
-                                keys.secretKey);
-                            console.log("Token : ", accesstoken);
+                                //action (login)
+                                const accesstoken = jwt.sign({ email: data.email },
+                                    keys.secretKey);
+                                console.log("Token : ", accesstoken);
 
-                            //update use's access token
-                            Partner.findOneAndUpdate({ email: req.body.email }, { accessToken: accesstoken }, { new: true }, (err, newPartner) => {
-                                if (err)
-                                    console.log(err)
-                                else
-                                    console.log(newPartner)
-                            })
+                                //update use's access token
+                                Partner.findOneAndUpdate({ email: req.body.email }, { accessToken: accesstoken }, { new: true }, (err, newPartner) => {
+                                    if (err)
+                                        console.log(err)
+                                    else
+                                        console.log(newPartner)
+                                })
 
-                            // const refreshToken = jwt.sign({ email: data.email }, 'RefreshTokenSercterSentence', { expiresIn: '100h' });
-                            // data.refreshToken = refreshToken;
-                            //res.cookie("jwt", accesstoken, {secure: true, httpOnly: true})
+                                // const refreshToken = jwt.sign({ email: data.email }, 'RefreshTokenSercterSentence', { expiresIn: '100h' });
+                                // data.refreshToken = refreshToken;
+                                //res.cookie("jwt", accesstoken, {secure: true, httpOnly: true})
 
-                            res.status(200).send({ "Data": data, "message": "Logged in successfully", "status": true, "token": accesstoken })
-
+                                res.status(200).send({ "Data": data, "message": "Logged in successfully", "status": true, "token": accesstoken })
+                            }
                         } else {
                             console.log("Entered password is " + req.body.password + " and the hashed paswword is " + data.password)
                             res.send({ "message": "Something went wrong, please try again !", "Status": false })
@@ -171,8 +175,8 @@ router.get('/', (req, res) => {
 
 //delete Partner
 router.delete('/delete/:id', (req, res) => {
-    
-    Partner.findByIdAndDelete({ "_id": req.params.id } , (err, data) => {
+
+    Partner.findByIdAndDelete({ "_id": req.params.id }, (err, data) => {
         if (err) {
 
             res.send({ "Data": err, "message": "Failed to delete Partner", "status": false });
@@ -180,7 +184,7 @@ router.delete('/delete/:id', (req, res) => {
             res.status(200).send({ "Data": data, "message": "Partner deleted successfully", "status": true })
         }
     })
-       
+
 })
 
 //Update Partner Profile
@@ -205,6 +209,60 @@ router.put('/update/:id', verifyToken, (req, res) => {
     });
 
 });
+
+//Deactivate  Partner's Profile
+router.put('/deactivate/:id', (req, res) => {
+    // jwt.verify(req.headers.authorization, "secretKey", (err, authData) => {
+    // console.log("req.params.accessToken:", req.headers.authorization)
+    // if (err) {
+
+    // res.send({ "Data": err, "message": "Session expired!", "status": false });
+
+    // } else {
+    // console.log("req.body", req.body)
+
+    Partner.updateOne({ _id: req.params.id }, { deactivate: "true" }, (err, data) => {
+        if (err) {
+            console.log("Backend Error/// Deactivate Partner")
+            res.status(500).send({ "Data": err, "message": "Error in updating data...!", "status": false })
+        } else {
+            console.log("Backend --> Partner Deactivated")
+
+            res.status(200).send({ "Data": data, "message": "Data Updated Successfully", "status": true })
+        }
+    })
+    //     }
+    // });
+
+});
+
+
+//Activate  Partner's Profile
+router.put('/activate/:id', (req, res) => {
+    // jwt.verify(req.headers.authorization, "secretKey", (err, authData) => {
+    // console.log("req.params.accessToken:", req.headers.authorization)
+    // if (err) {
+
+    // res.send({ "Data": err, "message": "Session expired!", "status": false });
+
+    // } else {
+    // console.log("req.body", req.body)
+
+    Partner.updateOne({ _id: req.params.id }, { deactivate: "false" }, (err, data) => {
+        if (err) {
+            console.log("Backend Error/// Activate Partner")
+            res.status(500).send({ "Data": err, "message": "Error in updating data...!", "status": false })
+        } else {
+            console.log("Backend --> Partner Activated")
+
+            res.status(200).send({ "Data": data, "message": "Data Updated Successfully", "status": true })
+        }
+    })
+    //     }
+    // });
+
+});
+
 
 // upload Partner image 
 router.post('/photo/:id', upload.single('photoURL'), (req, res) => {

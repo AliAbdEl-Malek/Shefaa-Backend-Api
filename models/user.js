@@ -33,6 +33,7 @@ var user = new mongoose.Schema({
     "accessToken": String,
     "address": String,
     "phone": String,
+    deactivate: { type: Boolean, default: 'false' }
 
 
 });

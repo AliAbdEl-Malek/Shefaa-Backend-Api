@@ -92,39 +92,46 @@ router.post('/login', (req, res) => {
                 res.send({ "message": "Error in logging in ...!", "Status": false })
             } else {
 
+
                 bcrypt.compare(req.body.password, data.password, function (err, result) {
                     if (err)
                         console.log("Error", err)
                     else {
                         if (result) {
-                            console.log("password equals hash = ", result) // true 
+                            if (data.deactivate == true) {
+                                console.log("This User is Activated")
+                            }
+                            else {
+                                console.log("password equals hash = ", result) // true 
 
-                            //action (login)
-                            const accesstoken = jwt.sign({ email: data.email },
-                                'secretKey');
-                            console.log("Token : ", accesstoken);
+                                //action (login)
+                                const accesstoken = jwt.sign({ email: data.email },
+                                    'secretKey');
+                                console.log("Token : ", accesstoken);
 
-                            //update use's access token
-                            User.findOneAndUpdate({ email: req.body.email }, { accessToken: accesstoken }, { new: true }, (err, newUser) => {
-                                if (err)
-                                    console.log(err)
-                                else
-                                    console.log(newUser)
-                            })
+                                //update use's access token
+                                User.findOneAndUpdate({ email: req.body.email }, { accessToken: accesstoken }, { new: true }, (err, newUser) => {
+                                    if (err)
+                                        console.log(err)
+                                    else
+                                        console.log(newUser)
+                                })
 
-                            // const refreshToken = jwt.sign({ email: data.email }, 'RefreshTokenSercterSentence', { expiresIn: '100h' });
-                            // data.refreshToken = refreshToken;
-                            //res.cookie("jwt", accesstoken, {secure: true, httpOnly: true})
+                                // const refreshToken = jwt.sign({ email: data.email }, 'RefreshTokenSercterSentence', { expiresIn: '100h' });
+                                // data.refreshToken = refreshToken;
+                                //res.cookie("jwt", accesstoken, {secure: true, httpOnly: true})
 
-                            res.status(200).send({ "Data": data, "message": "Logged in successfully", "status": true, "token": accesstoken })
+                                res.status(200).send({ "Data": data, "message": "Logged in successfully", "status": true, "token": accesstoken })
 
-                        } else {
+                             
+                            }
+                        }
+                        else {
                             console.log("Entered password is " + req.body.password + " and the hashed paswword is " + data.password)
                             res.send({ "message": "Something went wrong, please try again !", "Status": false })
                             // action redirect to login page 
                             // password is incorrect
                         }
-
                     }
                 });
             }
@@ -173,8 +180,8 @@ router.get('/', (req, res) => {
 
 //delete User
 router.delete('/delete/:id', (req, res) => {
-    
-    User.findByIdAndDelete({ "_id": req.params.id } , (err, data) => {
+
+    User.findByIdAndDelete({ "_id": req.params.id }, (err, data) => {
         if (err) {
 
             res.send({ "Data": err, "message": "Failed to delete User", "status": false });
@@ -182,7 +189,7 @@ router.delete('/delete/:id', (req, res) => {
             res.status(200).send({ "Data": data, "message": "User deleted successfully", "status": true })
         }
     })
-       
+
 })
 
 //Get Profile By ID from partners
@@ -263,6 +270,60 @@ router.put('/update/:id', verifyToken, (req, res) => {
     });
 
 });
+
+//Deactivate  User Profile
+router.put('/deactivate/:id', (req, res) => {
+    // jwt.verify(req.headers.authorization, "secretKey", (err, authData) => {
+    // console.log("req.params.accessToken:", req.headers.authorization)
+    // if (err) {
+
+    // res.send({ "Data": err, "message": "Session expired!", "status": false });
+
+    // } else {
+    // console.log("req.body", req.body)
+
+    User.updateOne({ _id: req.params.id }, { deactivate: "true" }, (err, data) => {
+        if (err) {
+            console.log("Backend Error/// Deactivate")
+            res.status(500).send({ "Data": err, "message": "Error in updating data...!", "status": false })
+        } else {
+            console.log("Backend --> Deactivate")
+
+            res.status(200).send({ "Data": data, "message": "Data Updated Successfully", "status": true })
+        }
+    })
+    //     }
+    // });
+
+});
+
+
+//Activate  User Profile
+router.put('/activate/:id', (req, res) => {
+    // jwt.verify(req.headers.authorization, "secretKey", (err, authData) => {
+    // console.log("req.params.accessToken:", req.headers.authorization)
+    // if (err) {
+
+    // res.send({ "Data": err, "message": "Session expired!", "status": false });
+
+    // } else {
+    // console.log("req.body", req.body)
+
+    User.updateOne({ _id: req.params.id }, { deactivate: "false" }, (err, data) => {
+        if (err) {
+            console.log("Backend Error/// Activate")
+            res.status(500).send({ "Data": err, "message": "Error in updating data...!", "status": false })
+        } else {
+            console.log("Backend --> Activated")
+
+            res.status(200).send({ "Data": data, "message": "Data Updated Successfully", "status": true })
+        }
+    })
+    //     }
+    // });
+
+});
+
 
 
 

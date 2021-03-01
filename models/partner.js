@@ -20,7 +20,8 @@ var partner = new mongoose.Schema({
     "photoURL": String,
     "accessToken":String,
     "address":String,
-    "phone":String
+    "phone":String,
+    deactivate: { type: Boolean, default: 'false' }
 
 
 
