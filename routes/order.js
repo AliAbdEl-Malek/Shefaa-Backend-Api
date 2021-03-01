@@ -1,4 +1,3 @@
-const { Router } = require('express');
 const express = require('express');
 
 const router = express.Router();
@@ -309,9 +308,30 @@ router.get('/get/deliverd', verifyToken, (req, res) => {
 
 
 
+//===================== (admin) ==========================================
 
 
+// router for getting all deliverd orders for admin
+router.get('/admin/deliverd', verifyToken, (req, res) => {
+    // console.log("req.headers.authorization:", req.headers.authorization)
+    jwt.verify(req.headers.authorization, 'secretKey', (err, authData) => {
 
+        if (err) {
+            res.send({ "Data": err, "message": "Session expired!", "status": false });
+        } else {
+            deliveredOrders.find({}, (err, data) => {
+                if (err) {
+                    res.status(500).send({ "Data": err, "message": "Error in retrieving orders", "status": false })
+                } else if (data == null) {
+                    res.status(500).send({ "Data": err, "message": "Error in retrieving orders", "status": false })
+                }
+                else {
+                    res.status(200).send({ "Data": data, "message": "Orders retrieved successfully", "status": true })
+                }
+            })
+        }
+    });
+})
 
 
 
