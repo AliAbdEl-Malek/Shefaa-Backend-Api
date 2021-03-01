@@ -42,7 +42,7 @@ router.post('/signup', (req, res) => {
                 console.log(hash)
 
                 Partner.create({
-                    id: "",
+                    // id: "",
                     name: req.body.name,
                     email: req.body.email,
                     password: hash,
@@ -158,6 +158,30 @@ router.get('/get/:accessToken', verifyToken, (req, res) => {
     });
 })
 
+//Get All Partners
+router.get('/', (req, res) => {
+    Partner.find({}, (err, data) => {
+        if (err) {
+            res.status(500).send({ "Data": err, "message": "Failed in getting Partners data ...!", "status": false })
+        } else {
+            res.status(200).send({ "Data": data, "message": "All Partners retrieved Successfully..!", "status": true })
+        }
+    })
+})
+
+//delete Partner
+router.delete('/delete/:id', (req, res) => {
+    
+    Partner.findByIdAndDelete({ "_id": req.params.id } , (err, data) => {
+        if (err) {
+
+            res.send({ "Data": err, "message": "Failed to delete Partner", "status": false });
+        } else {
+            res.status(200).send({ "Data": data, "message": "Partner deleted successfully", "status": true })
+        }
+    })
+       
+})
 
 //Update Partner Profile
 router.put('/update/:id', verifyToken, (req, res) => {

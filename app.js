@@ -46,6 +46,8 @@ const orderRouter = require('./routes/order')
 
 const favouriteRouter = require('./routes/favourite')
 
+const adminRouter = require('./routes/admin')
+
 // ----------------------------------------------------
 
 //======== user ==========
@@ -118,7 +120,10 @@ app.use('/favourite', favouriteRouter);
 
 
 
+//======== admin ==========
 
+// use middleware
+app.use('/admin', adminRouter);
 
 
 
