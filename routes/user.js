@@ -194,8 +194,8 @@ router.delete('/delete/:id', (req, res) => {
 
 //Get Profile By ID from partners
 router.get('/:id', verifyToken, (req, res) => {
-    console.log(req.headers)
-    console.log("request params:", req.params)
+    // console.log(req.headers)
+    // console.log("request params:", req.params)
     // console.log("Token is: ",req.params.accessToken)
     jwt.verify(req.headers.authorization, keys.secretKey, (err, authData) => {
 
@@ -218,33 +218,34 @@ router.get('/:id', verifyToken, (req, res) => {
 })
 
 // reset code for user
-router.post('/resetCode', verifyToken, (req, res) => {
-    // console.log(req.headers)
-    // console.log("Token: ", req.headers.authorization)
-    // console.log(req.body)
-    // console.log("Email from front: ",req.body.email)
-    jwt.verify(req.headers.authorization, "secretKey", (err, authData) => {
+router.post('/resetCode',  (req, res) => {
+    // // console.log(req.headers)
+    // // console.log("Token: ", req.headers.authorization)
+    // // console.log(req.body)
+    // // console.log("Email from front: ",req.body.email)
+    // jwt.verify(req.headers.authorization, "secretKey", (err, authData) => {
 
+    //     if (err) {
+
+    //         res.send({ "Data": err, "message": "Session expired!", "status": false });
+
+    //     } else {
+
+            
+    //     }
+    // });
+    User.findOne({ email: req.body.email }, (err, data) => {
         if (err) {
-
-            res.send({ "Data": err, "message": "Session expired!", "status": false });
-
-        } else {
-
-            User.findOne({ email: req.body.email }, (err, data) => {
-                if (err) {
-                    res.status(500).send("Error in find: " + err)
-                }
-                else if (data == null) {
-                    res.status(500).send("Something is wrong !: ")
-                } else {
-                    let code = generateCode()
-                    mailService.sendEmail(req.body.email, code).catch(console.error);
-                    res.send({ "Data": code, "message": "Email sent successfully", "status": true })
-                }
-            })
+            res.status(500).send("Error in find: " + err)
         }
-    });
+        else if (data == null) {
+            res.status(500).send("Something is wrong !: ")
+        } else {
+            let code = generateCode()
+            mailService.sendEmail(req.body.email, code).catch(console.error);
+            res.send({ "Data": code, "message": "Email sent successfully", "status": true })
+        }
+    })
 })
 
 
@@ -361,29 +362,30 @@ router.delete('/logout', (req, res) => {
 
 // reset user's password
 router.put('/update', (req, res) => {
-    jwt.verify(req.headers.authorization, "secretKey", (err, authData) => {
+    // jwt.verify(req.headers.authorization, "secretKey", (err, authData) => {
 
-        if (err) {
+    //     if (err) {
 
-            res.send({ "Data": err, "message": "Session expired!", "status": false });
+    //         res.send({ "Data": err, "message": "Session expired!", "status": false });
 
-        } else {
-            console.log("req.body.pass: ", req.body.password)
-            // hash the password and save it in database
-            bcrypt.hash(req.body.password, 10).then(function (hash) {
-                console.log("hash: ", hash)
-                User.updateOne({ accessToken: req.headers.authorization }, { password: hash }, (err, data) => {
-                    if (err) {
-                        res.status(500).send({ "Data": err, "message": "Error in resetting password...!", "status": false })
-                    } else {
-                        res.status(200).send({ "Data": data, "message": "Password reset Successfully", "status": true })
-                    }
-                })
+    //     } else {
+           
 
-            })
+    //     }
+    // });
+    console.log("req.body.pass: ", req.body.password)
+    // hash the password and save it in database
+    bcrypt.hash(req.body.password, 10).then(function (hash) {
+        console.log("hash: ", hash)
+        User.updateOne({ accessToken: req.headers.authorization }, { password: hash }, (err, data) => {
+            if (err) {
+                res.status(500).send({ "Data": err, "message": "Error in resetting password...!", "status": false })
+            } else {
+                res.status(200).send({ "Data": data, "message": "Password reset Successfully", "status": true })
+            }
+        })
 
-        }
-    });
+    })
 
 });
 

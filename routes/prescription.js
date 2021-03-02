@@ -22,7 +22,7 @@ const upload = multer({ storage: storage })
 // upload prescription image 
 router.post('/:id', upload.single('prescriptionURL'), (req, res) => {
 
-    let userData;
+    // let userData;
     let id = req.params.id
     console.log(id)
     console.log("req.File: ", req.file)
@@ -34,22 +34,25 @@ router.post('/:id', upload.single('prescriptionURL'), (req, res) => {
         if (err) {
             console.log(err)
         } else {
-            console.log(user)
-            userData = user
+            // console.log(user)
+            // userData = user
+
+            prescription.create({
+                user:user,
+                userID: req.params.id,
+                prescriptionURL: prescription_URL
+            }, (err, data) => {
+                if (err) {
+                    res.status(500).send({ "Data": err, "message": "Failed in posting a prescription...!", "status": false })
+                } else {
+                    res.status(200).send({ "Data": data , "message": "Prescription uploaded successfully...!", "status": true })
+                }
+        
+            })
         }
     })
 
-    prescription.create({
-        userID: req.params.id,
-        prescriptionURL: prescription_URL
-    }, (err, data) => {
-        if (err) {
-            res.status(500).send({ "Data": err, "message": "Failed in posting a prescription...!", "status": false })
-        } else {
-            res.status(200).send({ "Data": {"data":data , "user":userData} , "message": "Prescription uploaded successfully...!", "status": true })
-        }
-
-    })
+    
 
 })
 
